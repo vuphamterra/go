@@ -1,0 +1,47 @@
+syntax = "proto2";
+
+option go_package = "./deep_analyser";
+package deep_analyser;
+
+enum AlertType {
+    ALERT_NONE  = 0;
+    ALERT_YELLOW = 1;
+    ALERT_ORANGE = 2;
+    ALERT_RED = 3;
+    ALERT_BLACK = 4;
+}
+
+message Null {};
+message ecgVector {
+    required string patientUUID  = 1;
+    required int64 currTime     = 2;
+    repeated int32 ecgVal        = 3;
+    optional int32 hr           = 4;
+    optional int32 rr           = 5;
+    repeated int32 rri          = 6;
+    optional int32 spo2         = 7;
+    optional int32 pr           = 8;
+    optional float pi           = 9;
+    optional float temperature  = 10;
+    optional int32 motion       = 11;
+    optional string text        = 12;
+}
+message alertCode {
+    required AlertType alertRsp = 1;
+}
+
+message alertMsg {
+    required string severity = 1;
+    required string resource = 2;
+    required string event = 3;
+    optional int32 value = 4;
+    required int64 createTime = 5;
+
+}
+
+
+service DeepAnalyserRpc {
+    rpc ProcessEcg(ecgVector) returns (alertCode);
+    rpc ProcessEcgStream(stream ecgVector) returns (alertCode);
+    rpc RaiseAlert(alertMsg) returns (alertCode);
+}
